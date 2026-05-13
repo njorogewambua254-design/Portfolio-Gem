@@ -145,8 +145,9 @@ export default function App() {
         <div className="absolute inset-x-0 bottom-0 h-1/2 bg-gradient-to-t from-black/20 to-transparent pointer-events-none"></div>
         <div className="space-y-10 relative z-10">
           <div className="space-y-4">
-            <div className="w-24 h-24 sm:w-28 sm:h-28 rounded-2xl overflow-hidden border-2 border-white/20 shadow-xl print:w-24 print:h-24">
-              <img src="/uploads/2a833d749a0715efecfe2e84d3ddef23366cc9df046bb6cddc485fa324021a8a.jpg" alt="Joseph Njoroge" className="w-full h-full object-cover object-top" referrerPolicy="no-referrer" />
+            <div className="w-24 h-24 sm:w-28 sm:h-28 rounded-2xl overflow-hidden border-2 border-white/20 shadow-xl print:w-24 print:h-24 bg-white/5 flex items-center justify-center">
+              <img src="/folder/Passport.jpg" alt="Joseph Njoroge" className="w-full h-full object-cover object-top" referrerPolicy="no-referrer" onError={(e) => { e.currentTarget.style.display = 'none'; e.currentTarget.nextElementSibling!.classList.remove('hidden'); }} />
+              <span className="text-4xl sm:text-5xl font-display font-bold text-white/80 tracking-tighter hidden">JN</span>
             </div>
             <div className="space-y-1.5">
               <h1 className="text-3xl lg:text-4xl font-display font-bold tracking-tight text-white leading-tight">Joseph<br/>Njoroge</h1>
