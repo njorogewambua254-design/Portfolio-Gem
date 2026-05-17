@@ -5,7 +5,11 @@ import {
   BarChart,
   Moon,
   Sun,
-  Download
+  Download,
+  Building2,
+  GraduationCap,
+  Leaf,
+  HeartHandshake
 } from 'lucide-react';
 import React, { useState, useEffect, useRef } from 'react';
 import { Radar, RadarChart, PolarGrid, PolarAngleAxis, PolarRadiusAxis, ResponsiveContainer, Tooltip } from 'recharts';
@@ -326,6 +330,9 @@ export default function App() {
                     <li className="relative pl-4 before:content-[''] before:w-1.5 before:h-1.5 before:rounded-full before:bg-border-main before:absolute before:left-0 before:top-1.5">Manage electronic certifications (KEPHIS, KRA, AFA/HCD)</li>
                     <li className="relative pl-4 before:content-[''] before:w-1.5 before:h-1.5 before:rounded-full before:bg-border-main before:absolute before:left-0 before:top-1.5">Coordinate international certification audits</li>
                     <li className="relative pl-4 before:content-[''] before:w-1.5 before:h-1.5 before:rounded-full before:bg-border-main before:absolute before:left-0 before:top-1.5">Ensure full compliance of shipping documentation</li>
+                    <li className="relative pl-4 before:content-[''] before:w-1.5 before:h-1.5 before:rounded-full before:bg-border-main before:absolute before:left-0 before:top-1.5">Product intake at the buyer</li>
+                    <li className="relative pl-4 before:content-[''] before:w-1.5 before:h-1.5 before:rounded-full before:bg-border-main before:absolute before:left-0 before:top-1.5">Invoicing</li>
+                    <li className="relative pl-4 before:content-[''] before:w-1.5 before:h-1.5 before:rounded-full before:bg-border-main before:absolute before:left-0 before:top-1.5">Commercial analysis</li>
                   </ul>
                 </TimelineItem>
 
@@ -367,7 +374,7 @@ export default function App() {
 
           <div className="mb-16">
              <h3 className="font-mono text-[10px] uppercase tracking-widest font-semibold text-text-muted mb-6">Currently Learning</h3>
-             <div className="bg-bg-surface p-6 sm:p-8 rounded-2xl shadow-sm border border-border-main transition-colors relative overflow-hidden group">
+             <div className="bg-bg-surface p-6 sm:p-8 rounded-2xl shadow-sm border border-border-main transition-colors relative overflow-hidden group mb-8">
                <div className="absolute top-0 right-0 p-8 opacity-5 font-display text-[120px] font-bold tracking-tighter leading-none select-none text-text-main pointer-events-none group-hover:scale-110 group-hover:opacity-10 transition-all duration-700">
                  ALX
                </div>
@@ -394,6 +401,34 @@ export default function App() {
                  <div className="flex flex-wrap gap-2.5">
                    {['Data Cleaning', 'Data Visualization', 'Excel for Data Analysis', 'Analytical Reporting'].map(skill => (
                      <span key={skill} className="px-3 py-1.5 bg-bg-base border border-border-main rounded-md font-mono text-[11px] text-text-muted font-medium transition-colors hover:text-text-main cursor-default">
+                       {skill}
+                     </span>
+                   ))}
+                 </div>
+               </div>
+             </div>
+
+             <h3 className="font-mono text-[10px] uppercase tracking-widest font-semibold text-text-muted mb-6">Community & Volunteer Work</h3>
+             <div className="bg-bg-surface p-6 sm:p-8 rounded-2xl shadow-sm border border-border-main transition-colors relative overflow-hidden group hover:border-pink-500/30">
+               <div className="absolute top-0 right-0 p-8 opacity-[0.03] font-display text-[120px] font-bold tracking-tighter leading-none select-none text-text-main pointer-events-none group-hover:scale-110 group-hover:opacity-10 group-hover:text-pink-500 transition-all duration-700">
+                 <HeartHandshake className="w-32 h-32" />
+               </div>
+               <div className="relative z-10">
+                 <div className="flex items-start gap-5 mb-5">
+                   <div className="w-12 h-12 bg-pink-500/10 text-pink-500 flex items-center justify-center rounded-xl shrink-0 border border-pink-500/20 backdrop-blur-sm transition-colors group-hover:bg-pink-500/20">
+                     <HeartHandshake className="w-6 h-6" />
+                   </div>
+                   <div className="pt-1">
+                     <h3 className="text-base font-display font-bold text-text-main group-hover:text-pink-500 transition-colors">Volunteer & Philanthropist</h3>
+                     <p className="text-[13px] font-medium text-text-muted mb-2">Eastlands Charity Group & Personal Initiatives</p>
+                   </div>
+                 </div>
+                 <p className="text-[15px] text-text-muted leading-relaxed mb-6 max-w-2xl">
+                   Committed to uplifting the community by dedicating a portion of my personal income to buy food for needy families, particularly in local slums. Actively collaborate with the Eastlands Charity Group and participate in neighborhood community cleaning projects to improve local living conditions.
+                 </p>
+                 <div className="flex flex-wrap gap-2.5">
+                   {['Food Relief Initiatives', 'Community Cleaning', 'Eastlands Charity', 'Youth Mentorship'].map(skill => (
+                     <span key={skill} className="px-3 py-1.5 bg-bg-base border border-border-main rounded-md font-mono text-[11px] text-text-muted font-medium transition-colors hover:text-pink-500 hover:border-pink-500/30 cursor-default">
                        {skill}
                      </span>
                    ))}
@@ -456,6 +491,42 @@ export default function App() {
                       <a href="tel:0721120975" className="hover:text-primary transition-colors shrink-0">0721 120 975</a>
                     </div>
                   </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          {/* COMPANIES WORKED WITH */}
+          <div className="mt-16 pt-10 border-t border-border-main print:mt-10">
+            <h3 className="font-mono text-[10px] uppercase tracking-widest font-semibold text-text-muted mb-8 text-center">Organisations I've Worked With</h3>
+            <div className="flex flex-wrap justify-center items-center gap-8 md:gap-16 opacity-75 md:grayscale hover:grayscale-0 transition-all duration-500">
+              <div className="flex items-center gap-3 group">
+                <div className="p-3 bg-bg-surface rounded-xl border border-border-main group-hover:border-primary/30 group-hover:bg-primary/5 transition-all">
+                  <GraduationCap className="w-6 h-6 text-text-main group-hover:text-primary transition-colors" />
+                </div>
+                <div className="flex flex-col">
+                  <span className="font-display font-bold text-lg tracking-tight text-text-main group-hover:text-primary transition-colors leading-tight">Strathmore</span>
+                  <span className="font-mono text-[9px] uppercase tracking-widest text-text-muted mt-0.5">University</span>
+                </div>
+              </div>
+
+              <div className="flex items-center gap-3 group">
+                <div className="p-3 bg-bg-surface rounded-xl border border-border-main group-hover:border-green-500/30 group-hover:bg-green-500/5 transition-all">
+                  <Leaf className="w-6 h-6 text-text-main group-hover:text-green-500 transition-colors" />
+                </div>
+                <div className="flex flex-col">
+                  <span className="font-display font-bold text-lg tracking-tight text-text-main group-hover:text-green-500 transition-colors leading-tight">SokoFresh</span>
+                  <span className="font-mono text-[9px] uppercase tracking-[0.2em] text-text-muted mt-0.5">Agri Innovations</span>
+                </div>
+              </div>
+
+              <div className="flex items-center gap-3 group">
+                <div className="p-3 bg-bg-surface rounded-xl border border-border-main group-hover:border-blue-500/30 group-hover:bg-blue-500/5 transition-all">
+                  <Building2 className="w-6 h-6 text-text-main group-hover:text-blue-500 transition-colors" />
+                </div>
+                <div className="flex flex-col">
+                  <span className="font-display font-bold text-lg tracking-tight text-text-main group-hover:text-blue-500 transition-colors leading-tight">Eastlands</span>
+                  <span className="font-mono text-[9px] uppercase tracking-[0.2em] text-text-muted mt-0.5">College</span>
                 </div>
               </div>
             </div>
