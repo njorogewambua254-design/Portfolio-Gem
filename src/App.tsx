@@ -5,7 +5,6 @@ import {
   BarChart,
   Moon,
   Sun,
-  Download,
   Building2,
   GraduationCap,
   Leaf,
@@ -246,14 +245,6 @@ export default function App() {
           
           {/* TOP CONTROLS */}
           <div className="flex justify-end items-center gap-3 mb-10 print:hidden">
-            <button 
-              onClick={() => window.print()} 
-              className="p-2.5 rounded-full bg-bg-surface border border-border-main text-text-muted hover:text-text-main hover:bg-border-main/50 transition-all active:scale-95 shadow-sm cursor-pointer focus:outline-none focus:ring-2 focus:ring-primary/20"
-              aria-label="Export to PDF"
-              title="Export to PDF"
-            >
-              <Download className="w-[18px] h-[18px]" />
-            </button>
             <button 
               onClick={toggleDarkMode} 
               className="p-2.5 rounded-full bg-bg-surface border border-border-main text-text-muted hover:text-text-main hover:bg-border-main/50 transition-all active:scale-95 shadow-sm cursor-pointer focus:outline-none focus:ring-2 focus:ring-primary/20"
