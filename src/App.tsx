@@ -9,10 +9,16 @@ import {
   Building2,
   GraduationCap,
   Leaf,
-  HeartHandshake
+  HeartHandshake,
+  User,
+  Briefcase,
+  Contact,
+  MapPin,
+  ExternalLink
 } from 'lucide-react';
 import React, { useState, useEffect, useRef } from 'react';
 import { Radar, RadarChart, PolarGrid, PolarAngleAxis, PolarRadiusAxis, ResponsiveContainer, Tooltip } from 'recharts';
+import { motion, AnimatePresence } from 'motion/react';
 
 const logisticsData = [
   { subject: 'Supply Chain', A: 95, fullMark: 100 },
@@ -115,9 +121,30 @@ const TimelineItem: React.FC<{ children: React.ReactNode, delay?: number, isFirs
   );
 }
 
+const containerVariants = {
+  hidden: { opacity: 0, y: 20 },
+  visible: { 
+    opacity: 1, 
+    y: 0,
+    transition: { 
+      duration: 0.5, 
+      staggerChildren: 0.1 
+    }
+  },
+  exit: { opacity: 0, y: -20, transition: { duration: 0.3 } }
+};
+
+const itemVariants = {
+  hidden: { opacity: 0, y: 15 },
+  visible: { opacity: 1, y: 0, transition: { duration: 0.5 } }
+};
+
+type Tab = 'about' | 'portfolio' | 'contacts';
+
 export default function App() {
   const [isDarkMode, setIsDarkMode] = useState(false);
   const [isMounted, setIsMounted] = useState(false);
+  const [activeTab, setActiveTab] = useState<Tab>('about');
 
   useEffect(() => {
     setIsMounted(true);
@@ -143,13 +170,13 @@ export default function App() {
   };
 
   return (
-    <div className="flex flex-col md:flex-row print:flex-row min-h-screen bg-bg-base text-text-main font-sans transition-colors duration-200 print:[print-color-adjust:exact] [-webkit-print-color-adjust:exact]">
-      {/* LEFT SIDEBAR: IDENTITY & CONTACT */}
-      <aside className="w-full md:w-[320px] xl:w-[360px] bg-primary-deep text-white p-8 lg:p-10 flex flex-col justify-between shrink-0 md:sticky md:top-0 md:h-screen overflow-y-auto print:h-auto print:overflow-visible transition-colors duration-300 relative z-10 print:w-1/3">
+    <div className="flex flex-col md:flex-row print:flex-col min-h-screen bg-bg-base text-text-main font-sans transition-colors duration-200 print:[print-color-adjust:exact] [-webkit-print-color-adjust:exact]">
+      {/* LEFT SIDEBAR: IDENTITY & NAVIGATION */}
+      <aside className="w-full md:w-[280px] lg:w-[320px] bg-primary-deep text-white p-8 lg:p-10 flex flex-col justify-between shrink-0 md:sticky md:top-0 md:h-screen overflow-y-auto print:hidden transition-colors duration-300 relative z-10">
         <div className="absolute inset-x-0 bottom-0 h-1/2 bg-gradient-to-t from-black/20 to-transparent pointer-events-none"></div>
-        <div className="space-y-10 relative z-10">
+        <div className="space-y-10 relative z-10 w-full">
           <div className="space-y-4">
-            <div className="w-24 h-24 sm:w-28 sm:h-28 rounded-2xl overflow-hidden border-2 border-white/20 shadow-xl print:w-24 print:h-24 bg-white/5 flex items-center justify-center">
+            <div className="w-24 h-24 sm:w-28 sm:h-28 rounded-2xl overflow-hidden border-2 border-white/20 shadow-xl bg-white/5 flex items-center justify-center">
               <img src="/folder/Passport.jpg" alt="Joseph Njoroge" className="w-full h-full object-cover object-top" referrerPolicy="no-referrer" onError={(e) => { e.currentTarget.style.display = 'none'; e.currentTarget.nextElementSibling!.classList.remove('hidden'); }} />
               <span className="text-4xl sm:text-5xl font-display font-bold text-white/80 tracking-tighter hidden">JN</span>
             </div>
@@ -161,376 +188,526 @@ export default function App() {
             </div>
           </div>
 
-          <div className="space-y-8">
-            <div className="space-y-4">
-              <div className="flex items-center gap-3 text-sm text-white/90 group">
-                <div className="w-8 h-8 rounded-full bg-white/5 flex items-center justify-center text-primary-light">
-                  <Phone className="w-4 h-4" />
-                </div>
-                <a href="tel:0705379875" className="hover:text-white transition-colors">0705 379 875</a>
-              </div>
-              <div className="flex items-center gap-3 text-sm text-white/90 group">
-                <div className="w-8 h-8 rounded-full bg-white/5 flex items-center justify-center text-primary-light">
-                  <Mail className="w-4 h-4" />
-                </div>
-                <a href="mailto:njorogewambua254@gmail.com" className="hover:text-white transition-colors">njorogewambua254@gmail.com</a>
-              </div>
-              <div className="flex items-center gap-3 text-sm text-white/90 group">
-                <div className="w-8 h-8 rounded-full bg-white/5 flex items-center justify-center text-primary-light">
-                  <Linkedin className="w-4 h-4" />
-                </div>
-                <a href="https://linkedin.com/in/josephnjoroge-44b271346" target="_blank" rel="noopener noreferrer" className="hover:text-white transition-colors">LinkedIn</a>
-              </div>
-            </div>
-
-            <div className="pt-6 border-t border-white/10">
-              <p className="text-white/40 font-mono text-[10px] uppercase tracking-widest font-semibold mb-4">Achievements</p>
-              <div className="space-y-2.5">
-                <div className="bg-white/5 p-3.5 rounded-xl border border-white/5 hover:bg-white/10 transition-colors cursor-default">
-                  <p className="text-xs font-semibold text-white/90">Employee of the Year 2025</p>
-                  <p className="font-mono text-[9px] text-primary-light mt-1">SokoFresh Agri Innovations</p>
-                </div>
-                <div className="bg-white/5 p-3.5 rounded-xl border border-white/5 hover:bg-white/10 transition-colors cursor-default">
-                  <p className="text-xs font-semibold text-white/90">Employee of the Month</p>
-                  <p className="font-mono text-[9px] text-primary-light mt-1">Mar 2024 · SokoFresh</p>
-                </div>
-                <div className="bg-white/5 p-3.5 rounded-xl border border-white/5 hover:bg-white/10 transition-colors cursor-default">
-                  <p className="text-xs font-semibold text-white/90">Result Driven Employee</p>
-                  <p className="font-mono text-[9px] text-primary-light mt-1">SokoFresh Agri Innovations</p>
-                </div>
-              </div>
-            </div>
-          </div>
+          <nav className="flex flex-row md:flex-col gap-2 overflow-x-auto md:overflow-visible pb-2 md:pb-0 [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none] w-full">
+            <button 
+              onClick={() => setActiveTab('about')}
+              className={`flex items-center gap-3 px-4 py-3 rounded-xl transition-all text-left whitespace-nowrap ${activeTab === 'about' ? 'bg-primary text-white shadow-md' : 'text-white/60 hover:text-white hover:bg-white/10'}`}
+            >
+              <User className="w-4 h-4 shrink-0" />
+              <span className="font-semibold text-sm tracking-wide">About</span>
+            </button>
+            <button 
+              onClick={() => setActiveTab('portfolio')}
+              className={`flex items-center gap-3 px-4 py-3 rounded-xl transition-all text-left whitespace-nowrap ${activeTab === 'portfolio' ? 'bg-primary text-white shadow-md' : 'text-white/60 hover:text-white hover:bg-white/10'}`}
+            >
+              <Briefcase className="w-4 h-4 shrink-0" />
+              <span className="font-semibold text-sm tracking-wide">Portfolio</span>
+            </button>
+            <button 
+              onClick={() => setActiveTab('contacts')}
+              className={`flex items-center gap-3 px-4 py-3 rounded-xl transition-all text-left whitespace-nowrap ${activeTab === 'contacts' ? 'bg-primary text-white shadow-md' : 'text-white/60 hover:text-white hover:bg-white/10'}`}
+            >
+              <Contact className="w-4 h-4 shrink-0" />
+              <span className="font-semibold text-sm tracking-wide">Contacts</span>
+            </button>
+          </nav>
         </div>
 
-        <div className="mt-10 p-4 bg-black/20 border border-white/10 rounded-xl flex items-center gap-4 relative z-10 backdrop-blur-md">
-          <div className="relative flex h-2.5 w-2.5 shrink-0">
-            <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-primary-light opacity-50"></span>
-            <span className="relative inline-flex rounded-full h-2.5 w-2.5 bg-primary-light"></span>
-          </div>
-          <div>
-            <p className="font-mono text-[9px] uppercase tracking-wider text-primary-light/80">Status</p>
-            <p className="text-sm text-white/90 font-medium">Available · Nairobi</p>
+        <div className="mt-10 pt-6 border-t border-white/10 hidden md:block z-10 transition-colors">
+          <p className="font-mono text-[10px] uppercase tracking-wider text-primary-light mb-2.5">Status</p>
+          <div className="flex items-center gap-3">
+            <span className="relative flex h-2 w-2 shrink-0">
+              <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-green-400 opacity-75"></span>
+              <span className="relative inline-flex rounded-full h-2 w-2 bg-green-400"></span>
+            </span>
+            <span className="text-[13px] font-medium text-white/90">Available for Opportunities</span>
           </div>
         </div>
       </aside>
 
+      {/* PRINT HEADER ONLY VISIBLE WHEN PRINTING */}
+      <div className="hidden print:block w-full border-b border-border-main p-8 mb-8 pb-8">
+         <div className="flex justify-between items-end">
+           <div>
+             <h1 className="text-4xl font-display font-bold tracking-tight text-text-main">Joseph Njoroge</h1>
+             <p className="text-primary font-mono text-[12px] tracking-[0.2em] uppercase font-medium mt-2">Operations & Logistics Professional</p>
+           </div>
+           <div className="text-right text-sm">
+             <p>njorogewambua254@gmail.com</p>
+             <p>0705 379 875 | Nairobi</p>
+           </div>
+         </div>
+      </div>
+
       {/* MAIN CONTENT AREA */}
-      <main className="flex-1 p-6 sm:p-8 lg:p-14 xl:p-20 flex flex-col overflow-y-auto print:overflow-visible w-full print:w-2/3 relative transition-colors duration-300">
-        <div className="absolute inset-0 bg-[linear-gradient(to_right,#80808012_1px,transparent_1px),linear-gradient(to_bottom,#80808012_1px,transparent_1px)] bg-[size:24px_24px]"></div>
+      <main className="flex-1 p-6 sm:p-8 lg:p-14 xl:p-20 flex flex-col overflow-y-auto print:overflow-visible w-full relative transition-colors duration-300">
+        <div className="absolute inset-0 bg-[linear-gradient(to_right,#80808012_1px,transparent_1px),linear-gradient(to_bottom,#80808012_1px,transparent_1px)] bg-[size:24px_24px] pointer-events-none"></div>
         <div className="max-w-4xl mx-auto w-full relative z-10">
-          {/* HEADER / SUMMARY AND TOGGLE BUTTON */}
-          <header className="mb-14 relative group">
-            <div className="flex justify-between items-start mb-6">
-              <p className="text-primary font-mono text-[10px] uppercase tracking-[0.3em] font-semibold">Executive Summary</p>
+          
+          {/* TOP CONTROLS */}
+          <div className="flex justify-end items-center gap-3 mb-10 print:hidden">
+            <button 
+              onClick={() => window.print()} 
+              className="p-2.5 rounded-full bg-bg-surface border border-border-main text-text-muted hover:text-text-main hover:bg-border-main/50 transition-all active:scale-95 shadow-sm cursor-pointer focus:outline-none focus:ring-2 focus:ring-primary/20"
+              aria-label="Export to PDF"
+              title="Export to PDF"
+            >
+              <Download className="w-[18px] h-[18px]" />
+            </button>
+            <button 
+              onClick={toggleDarkMode} 
+              className="p-2.5 rounded-full bg-bg-surface border border-border-main text-text-muted hover:text-text-main hover:bg-border-main/50 transition-all active:scale-95 shadow-sm cursor-pointer focus:outline-none focus:ring-2 focus:ring-primary/20"
+              aria-label="Toggle dark mode"
+              title="Toggle Dark Mode"
+            >
+              {isDarkMode ? <Sun className="w-[18px] h-[18px] text-primary" /> : <Moon className="w-[18px] h-[18px]" />}
+            </button>
+          </div>
+
+          <AnimatePresence mode="wait">
+            <motion.div 
+              key={activeTab} 
+              variants={containerVariants}
+              initial="hidden"
+              animate="visible"
+              exit="exit"
+              className="print:!animate-none print:!opacity-100 print:!block"
+            >
               
-              <div className="flex items-center gap-3 ml-4 shrink-0 print:hidden">
-                <button 
-                  onClick={() => window.print()} 
-                  className="p-2.5 rounded-full bg-bg-surface border border-border-main text-text-muted hover:text-text-main hover:bg-border-main/50 transition-all active:scale-95 shadow-sm cursor-pointer focus:outline-none focus:ring-2 focus:ring-primary/20"
-                  aria-label="Export to PDF"
-                  title="Export to PDF"
-                >
-                  <Download className="w-[18px] h-[18px]" />
-                </button>
-                <button 
-                  onClick={toggleDarkMode} 
-                  className="p-2.5 rounded-full bg-bg-surface border border-border-main text-text-muted hover:text-text-main hover:bg-border-main/50 transition-all active:scale-95 shadow-sm cursor-pointer focus:outline-none focus:ring-2 focus:ring-primary/20"
-                  aria-label="Toggle dark mode"
-                  title="Toggle Dark Mode"
-                >
-                  {isDarkMode ? <Sun className="w-[18px] h-[18px] text-primary" /> : <Moon className="w-[18px] h-[18px]" />}
-                </button>
-              </div>
-            </div>
-            <p className="text-lg lg:text-xl leading-relaxed text-text-main font-light text-balance max-w-3xl">
-              Results-oriented supply chain and operations professional transitioning into <span className="font-semibold text-primary underline decoration-primary/30 decoration-2 underline-offset-4">data-driven decision making</span>. With a strong foundation in horticultural export logistics — spanning freight forwarding, packhouse management, regulatory compliance, and international certification coordination — I am building expertise in data analysis through ALX Africa to bring analytical rigour to supply chain optimisation, inventory intelligence, and operational performance management.
-            </p>
-          </header>
-
-          <div className="grid grid-cols-1 xl:grid-cols-2 print:grid-cols-2 gap-12 lg:gap-16 mb-16">
-            {/* SKILLS & COMPLIANCE */}
-            <section className="space-y-10">
-              <div>
-                <h3 className="font-mono text-[10px] uppercase tracking-widest font-semibold text-text-muted mb-5">Operations & Logistics</h3>
-                <div className="h-[260px] w-full bg-bg-surface border border-border-main rounded-2xl shadow-sm overflow-hidden p-2 relative group block">
-                  {isMounted && (
-                    <ResponsiveContainer width="100%" height="100%">
-                      <RadarChart cx="50%" cy="50%" outerRadius="70%" data={logisticsData}>
-                        <PolarGrid stroke="var(--border-main)" strokeDasharray="3 3" />
-                        <PolarAngleAxis 
-                          dataKey="subject" 
-                          tick={{ fill: 'var(--text-muted)', fontSize: 9, fontFamily: 'monospace', fontWeight: 600 }} 
-                        />
-                        <Tooltip 
-                          contentStyle={{ backgroundColor: 'var(--bg-surface)', borderColor: 'var(--border-main)', borderRadius: '8px', fontSize: '11px', color: 'var(--text-main)', boxShadow: '0 4px 6px -1px rgb(0 0 0 / 0.1)' }} 
-                          itemStyle={{ color: 'var(--primary)', fontWeight: 600 }} 
-                          cursor={{ stroke: 'var(--primary-light)', strokeWidth: 1, strokeDasharray: '3 3' }}
-                        />
-                        <Radar 
-                          name="Proficiency" 
-                          dataKey="A" 
-                          stroke="var(--primary)" 
-                          strokeWidth={2}
-                          fill="var(--primary)" 
-                          fillOpacity={0.2} 
-                          className="transition-opacity duration-300 group-hover:fill-opacity-40"
-                          isAnimationActive={true}
-                          animationDuration={1500}
-                          animationEasing="ease-out"
-                          dot={{ r: 2.5, fill: 'var(--bg-surface)', stroke: 'var(--primary)', strokeWidth: 1.5 }}
-                          activeDot={{ r: 4, fill: 'var(--primary)', stroke: 'var(--bg-surface)' }}
-                        />
-                      </RadarChart>
-                    </ResponsiveContainer>
-                  )}
-                </div>
-              </div>
-
-              <div>
-                <h3 className="font-mono text-[10px] uppercase tracking-widest font-semibold text-text-muted mb-5">Data & Technology</h3>
-                <div className="bg-bg-surface border border-border-main rounded-2xl shadow-sm p-6 lg:p-7 space-y-3.5">
-                  {techSkills.map((skill, index) => (
-                    <SkillBar key={skill.name} name={skill.name} percentage={skill.percentage} index={index} />
-                  ))}
-                </div>
-              </div>
-
-              <div>
-                <h3 className="font-mono text-[10px] uppercase tracking-widest font-semibold text-text-muted mb-5">Certifications & Audits</h3>
-                <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-1 gap-2.5">
-                  {[
-                    'SMETA Audit Coordination',
-                    'GlobalG.A.P. Certification',
-                    'GRASP Certification',
-                    'Rainforest Alliance Certification',
-                    'Compliance Management',
-                    'Regulatory Frameworks'
-                  ].map((skill) => (
-                    <div key={skill} className="flex items-center gap-3 p-3 bg-bg-surface rounded-xl border border-border-main shadow-sm hover:border-primary/30 transition-colors">
-                      <div className="w-1.5 h-1.5 bg-primary rounded-full shrink-0"></div>
-                      <p className="text-[11px] font-semibold text-text-main uppercase tracking-tight">{skill}</p>
+              {/* ----------------- ABOUT TAB (AND PRINT DEFAULTS) ----------------- */}
+              {(activeTab === 'about') && (
+                <div className="space-y-16 print:space-y-12 pb-12">
+                  <motion.section variants={itemVariants}>
+                    <p className="text-primary font-mono text-[10px] uppercase tracking-[0.3em] font-semibold mb-6">Executive Summary</p>
+                    <div className="relative">
+                      <div className="absolute -left-4 top-0 bottom-0 w-1 bg-gradient-to-b from-primary/50 to-transparent rounded-full hidden sm:block"></div>
+                      <p className="text-lg lg:text-xl leading-relaxed text-text-main font-light text-balance max-w-3xl sm:pl-6">
+                        Results-oriented supply chain and operations professional transitioning into <strong className="font-semibold text-primary">data-driven decision making</strong>. With a strong foundation in horticultural export logistics — spanning freight forwarding, packhouse management, regulatory compliance, and international certification coordination — I am building expertise in data analysis through ALX Africa to bring analytical rigour to supply chain optimisation, inventory intelligence, and operational performance management.
+                      </p>
                     </div>
-                  ))}
-                </div>
-              </div>
-            </section>
+                  </motion.section>
 
-            {/* PROFESSIONAL TIMELINE */}
-            <section className="space-y-6">
-              <h3 className="font-mono text-[10px] uppercase tracking-widest font-semibold text-text-muted">Professional Timeline</h3>
-              <div className="relative border-l border-border-main pl-7 space-y-12 py-2 transition-colors">
-                
-                <TimelineItem isFirst={true} delay={100}>
-                  <p className="font-mono text-[10px] font-semibold text-primary tracking-widest">JAN 2025 – PRESENT</p>
-                  <h4 className="text-[15px] font-display font-bold text-text-main">Operations & Logistics Officer</h4>
-                  <p className="text-xs text-text-muted font-medium pb-2">SokoFresh Agri Innovations EA Ltd</p>
-                  <ul className="list-none text-[13px] text-text-muted space-y-2">
-                    <li className="relative pl-4 before:content-[''] before:w-1.5 before:h-1.5 before:rounded-full before:bg-border-main before:absolute before:left-0 before:top-1.5">Plan and optimize outgoing shipments</li>
-                    <li className="relative pl-4 before:content-[''] before:w-1.5 before:h-1.5 before:rounded-full before:bg-border-main before:absolute before:left-0 before:top-1.5">Manage electronic certifications (KEPHIS, KRA, AFA/HCD)</li>
-                    <li className="relative pl-4 before:content-[''] before:w-1.5 before:h-1.5 before:rounded-full before:bg-border-main before:absolute before:left-0 before:top-1.5">Coordinate international certification audits</li>
-                    <li className="relative pl-4 before:content-[''] before:w-1.5 before:h-1.5 before:rounded-full before:bg-border-main before:absolute before:left-0 before:top-1.5">Ensure full compliance of shipping documentation</li>
-                    <li className="relative pl-4 before:content-[''] before:w-1.5 before:h-1.5 before:rounded-full before:bg-border-main before:absolute before:left-0 before:top-1.5">Product intake at the buyer</li>
-                    <li className="relative pl-4 before:content-[''] before:w-1.5 before:h-1.5 before:rounded-full before:bg-border-main before:absolute before:left-0 before:top-1.5">Invoicing</li>
-                    <li className="relative pl-4 before:content-[''] before:w-1.5 before:h-1.5 before:rounded-full before:bg-border-main before:absolute before:left-0 before:top-1.5">Commercial analysis</li>
-                  </ul>
-                </TimelineItem>
+                  <motion.section variants={itemVariants}>
+                    <h3 className="font-mono text-[10px] uppercase tracking-widest font-semibold text-text-muted mb-6">Currently Learning</h3>
+                    <motion.div 
+                      whileHover={{ scale: 1.01 }}
+                      className="bg-gradient-to-br from-bg-surface to-bg-base p-6 sm:p-8 rounded-3xl shadow-sm border border-border-main transition-all relative overflow-hidden group"
+                    >
+                      <div className="absolute top-0 right-0 p-8 opacity-5 font-display text-[120px] font-bold tracking-tighter leading-none select-none text-text-main pointer-events-none group-hover:scale-110 group-hover:opacity-10 transition-all duration-700">
+                        ALX
+                      </div>
+                      <div className="relative z-10">
+                        <div className="flex items-start gap-5 mb-5">
+                          <div className="w-14 h-14 bg-primary/10 text-primary flex items-center justify-center rounded-2xl shrink-0 border border-primary/20 backdrop-blur-sm shadow-inner group-hover:shadow-primary/20 transition-all">
+                            <BarChart className="w-7 h-7" />
+                          </div>
+                          <div className="pt-1.5">
+                            <h3 className="text-lg font-display font-bold text-text-main">Data Analysis Program</h3>
+                            <p className="text-[14px] font-medium text-text-muted mb-2">ALX Africa</p>
+                            <div className="flex items-center gap-2 flex-wrap">
+                              <span className="relative flex h-2 w-2 shrink-0">
+                                <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-primary opacity-75"></span>
+                                <span className="relative inline-flex rounded-full h-2 w-2 bg-primary"></span>
+                              </span>
+                              <span className="font-mono text-[10px] uppercase tracking-wider font-semibold text-primary">In Progress · 2025</span>
+                            </div>
+                          </div>
+                        </div>
+                        <p className="text-[15px] text-text-muted leading-relaxed mb-6 max-w-2xl">
+                          Developing proficiency in data cleaning, visualization, and statistical reporting with a focus on supply chain optimisation.
+                        </p>
+                        <div className="flex flex-wrap gap-2.5">
+                          {['Data Cleaning', 'Data Visualization', 'Excel for Data Analysis', 'Analytical Reporting'].map(skill => (
+                            <span key={skill} className="px-3 py-1.5 bg-bg-base/50 border border-border-main rounded-lg font-mono text-[11px] text-text-muted font-medium transition-colors hover:text-text-main hover:border-primary/30 hover:bg-primary/5 cursor-default">
+                              {skill}
+                            </span>
+                          ))}
+                        </div>
+                      </div>
+                    </motion.div>
+                  </motion.section>
 
-                <TimelineItem delay={200}>
-                  <p className="font-mono text-[10px] font-semibold text-text-muted tracking-widest">MAY 2024 – JAN 2025</p>
-                  <h4 className="text-[15px] font-display font-bold text-text-main">Operations & Logistics Associate</h4>
-                  <p className="text-xs text-text-muted font-medium pb-2">SokoFresh Agri Innovations EA Ltd</p>
-                  <ul className="list-none text-[13px] text-text-muted space-y-2">
-                    <li className="relative pl-4 before:content-[''] before:w-1.5 before:h-1.5 before:rounded-full before:bg-border-main before:absolute before:left-0 before:top-1.5">Coordinated outgoing avocado shipments</li>
-                    <li className="relative pl-4 before:content-[''] before:w-1.5 before:h-1.5 before:rounded-full before:bg-border-main before:absolute before:left-0 before:top-1.5">Managed bookings with KEPHIS, KRA, MAERSK</li>
-                    <li className="relative pl-4 before:content-[''] before:w-1.5 before:h-1.5 before:rounded-full before:bg-border-main before:absolute before:left-0 before:top-1.5">Provided shipment status updates to customers</li>
-                  </ul>
-                </TimelineItem>
+                  <motion.section variants={itemVariants}>
+                    <h3 className="font-mono text-[10px] uppercase tracking-widest font-semibold text-text-muted mb-6">Community & Volunteer Work</h3>
+                    <motion.div 
+                      whileHover={{ scale: 1.01 }}
+                      className="bg-gradient-to-br from-bg-surface to-bg-base p-6 sm:p-8 rounded-3xl shadow-sm border border-border-main transition-all relative overflow-hidden group hover:border-pink-500/40"
+                    >
+                      <div className="absolute -top-10 -right-10 p-8 opacity-[0.03] font-display text-[120px] font-bold tracking-tighter leading-none select-none text-text-main pointer-events-none group-hover:scale-110 group-hover:opacity-10 group-hover:text-pink-500 transition-all duration-700">
+                        <HeartHandshake className="w-32 h-32" />
+                      </div>
+                      <div className="relative z-10">
+                        <div className="flex items-start gap-5 mb-5">
+                          <div className="w-14 h-14 bg-pink-500/10 text-pink-500 flex items-center justify-center rounded-2xl shrink-0 border border-pink-500/20 backdrop-blur-sm transition-colors group-hover:bg-pink-500/20 group-hover:shadow-pink-500/20 shadow-inner">
+                            <HeartHandshake className="w-7 h-7" />
+                          </div>
+                          <div className="pt-1.5">
+                            <h3 className="text-lg font-display font-bold text-text-main group-hover:text-pink-500 transition-colors">Volunteer & Philanthropist</h3>
+                            <p className="text-[14px] font-medium text-text-muted mb-2">Eastlands Charity Group & Personal Initiatives</p>
+                          </div>
+                        </div>
+                        <p className="text-[15px] text-text-muted leading-relaxed mb-6 max-w-2xl">
+                          Committed to uplifting the community by dedicating a portion of my personal income to buy food for needy families, particularly in local slums. Actively collaborate with the Eastlands Charity Group and participate in neighborhood community cleaning projects to improve local living conditions.
+                        </p>
+                        <div className="flex flex-wrap gap-2.5">
+                          {['Food Relief Initiatives', 'Community Cleaning', 'Eastlands Charity', 'Youth Mentorship'].map(skill => (
+                            <span key={skill} className="px-3 py-1.5 bg-bg-base/50 border border-border-main rounded-lg font-mono text-[11px] text-text-muted font-medium transition-colors hover:text-pink-500 hover:border-pink-500/40 hover:bg-pink-500/5 cursor-default">
+                              {skill}
+                            </span>
+                          ))}
+                        </div>
+                      </div>
+                    </motion.div>
+                  </motion.section>
 
-                <TimelineItem delay={300}>
-                  <p className="font-mono text-[10px] font-semibold text-text-muted tracking-widest">NOV 2023 – APR 2024</p>
-                  <h4 className="text-[15px] font-display font-bold text-text-main">Intake Intern Trainee</h4>
-                  <p className="text-xs text-text-muted font-medium pb-2">SokoFresh Agri Innovations EA Ltd</p>
-                  <ul className="list-none text-[13px] text-text-muted space-y-2">
-                    <li className="relative pl-4 before:content-[''] before:w-1.5 before:h-1.5 before:rounded-full before:bg-border-main before:absolute before:left-0 before:top-1.5">Procured fresh produce from smallholder farmers</li>
-                    <li className="relative pl-4 before:content-[''] before:w-1.5 before:h-1.5 before:rounded-full before:bg-border-main before:absolute before:left-0 before:top-1.5">Quality control, sorting & grading</li>
-                    <li className="relative pl-4 before:content-[''] before:w-1.5 before:h-1.5 before:rounded-full before:bg-border-main before:absolute before:left-0 before:top-1.5">Maintained accurate inventory records</li>
-                  </ul>
-                </TimelineItem>
-
-                <TimelineItem delay={400}>
-                  <p className="font-mono text-[10px] font-semibold text-text-muted tracking-widest">MAY 2023 – AUG 2023</p>
-                  <h4 className="text-[15px] font-display font-bold text-text-main">Lab Assistance Technician</h4>
-                  <p className="text-xs text-text-muted font-medium pb-2">Strathmore University (CeRTS)</p>
-                  <ul className="list-none text-[13px] text-text-muted space-y-2">
-                    <li className="relative pl-4 before:content-[''] before:w-1.5 before:h-1.5 before:rounded-full before:bg-border-main before:absolute before:left-0 before:top-1.5">Blood & plasma sample preparation</li>
-                    <li className="relative pl-4 before:content-[''] before:w-1.5 before:h-1.5 before:rounded-full before:bg-border-main before:absolute before:left-0 before:top-1.5">Maintenance of analytical instruments</li>
-                  </ul>
-                </TimelineItem>
-
-              </div>
-            </section>
-          </div>
-
-          <div className="mb-16">
-             <h3 className="font-mono text-[10px] uppercase tracking-widest font-semibold text-text-muted mb-6">Currently Learning</h3>
-             <div className="bg-bg-surface p-6 sm:p-8 rounded-2xl shadow-sm border border-border-main transition-colors relative overflow-hidden group mb-8">
-               <div className="absolute top-0 right-0 p-8 opacity-5 font-display text-[120px] font-bold tracking-tighter leading-none select-none text-text-main pointer-events-none group-hover:scale-110 group-hover:opacity-10 transition-all duration-700">
-                 ALX
-               </div>
-               <div className="relative z-10">
-                 <div className="flex items-start gap-5 mb-5">
-                   <div className="w-12 h-12 bg-primary/10 text-primary flex items-center justify-center rounded-xl shrink-0 border border-primary/20 backdrop-blur-sm">
-                     <BarChart className="w-6 h-6" />
-                   </div>
-                   <div className="pt-1">
-                     <h3 className="text-base font-display font-bold text-text-main">Data Analysis Program</h3>
-                     <p className="text-[13px] font-medium text-text-muted mb-2">ALX Africa</p>
-                     <div className="flex items-center gap-2 flex-wrap">
-                        <span className="relative flex h-2 w-2 shrink-0">
-                          <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-primary opacity-75"></span>
-                          <span className="relative inline-flex rounded-full h-2 w-2 bg-primary"></span>
-                        </span>
-                        <span className="font-mono text-[10px] uppercase tracking-wider font-semibold text-primary">In Progress · 2025</span>
-                     </div>
-                   </div>
-                 </div>
-                 <p className="text-[15px] text-text-muted leading-relaxed mb-6 max-w-2xl">
-                   Developing proficiency in data cleaning, visualization, and statistical reporting with a focus on supply chain optimisation.
-                 </p>
-                 <div className="flex flex-wrap gap-2.5">
-                   {['Data Cleaning', 'Data Visualization', 'Excel for Data Analysis', 'Analytical Reporting'].map(skill => (
-                     <span key={skill} className="px-3 py-1.5 bg-bg-base border border-border-main rounded-md font-mono text-[11px] text-text-muted font-medium transition-colors hover:text-text-main cursor-default">
-                       {skill}
-                     </span>
-                   ))}
-                 </div>
-               </div>
-             </div>
-
-             <h3 className="font-mono text-[10px] uppercase tracking-widest font-semibold text-text-muted mb-6">Community & Volunteer Work</h3>
-             <div className="bg-bg-surface p-6 sm:p-8 rounded-2xl shadow-sm border border-border-main transition-colors relative overflow-hidden group hover:border-pink-500/30">
-               <div className="absolute top-0 right-0 p-8 opacity-[0.03] font-display text-[120px] font-bold tracking-tighter leading-none select-none text-text-main pointer-events-none group-hover:scale-110 group-hover:opacity-10 group-hover:text-pink-500 transition-all duration-700">
-                 <HeartHandshake className="w-32 h-32" />
-               </div>
-               <div className="relative z-10">
-                 <div className="flex items-start gap-5 mb-5">
-                   <div className="w-12 h-12 bg-pink-500/10 text-pink-500 flex items-center justify-center rounded-xl shrink-0 border border-pink-500/20 backdrop-blur-sm transition-colors group-hover:bg-pink-500/20">
-                     <HeartHandshake className="w-6 h-6" />
-                   </div>
-                   <div className="pt-1">
-                     <h3 className="text-base font-display font-bold text-text-main group-hover:text-pink-500 transition-colors">Volunteer & Philanthropist</h3>
-                     <p className="text-[13px] font-medium text-text-muted mb-2">Eastlands Charity Group & Personal Initiatives</p>
-                   </div>
-                 </div>
-                 <p className="text-[15px] text-text-muted leading-relaxed mb-6 max-w-2xl">
-                   Committed to uplifting the community by dedicating a portion of my personal income to buy food for needy families, particularly in local slums. Actively collaborate with the Eastlands Charity Group and participate in neighborhood community cleaning projects to improve local living conditions.
-                 </p>
-                 <div className="flex flex-wrap gap-2.5">
-                   {['Food Relief Initiatives', 'Community Cleaning', 'Eastlands Charity', 'Youth Mentorship'].map(skill => (
-                     <span key={skill} className="px-3 py-1.5 bg-bg-base border border-border-main rounded-md font-mono text-[11px] text-text-muted font-medium transition-colors hover:text-pink-500 hover:border-pink-500/30 cursor-default">
-                       {skill}
-                     </span>
-                   ))}
-                 </div>
-               </div>
-             </div>
-          </div>
-
-          {/* BOTTOM SECTION: EDUCATION & REFERENCES */}
-          <div className="pt-10 border-t border-border-main grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 print:grid-cols-3 gap-10 transition-colors">
-            <div>
-              <p className="font-mono text-[10px] uppercase tracking-widest font-semibold text-text-muted mb-5">Education</p>
-              <div className="space-y-4">
-                <div className="group">
-                  <p className="text-[14px] font-display font-bold text-text-main group-hover:text-primary transition-colors">BSc Industrial Chemistry</p>
-                  <p className="font-mono text-[11px] text-text-muted mt-1.5">Masinde Muliro University · 2023</p>
-                </div>
-              </div>
-            </div>
-
-            <div>
-              <p className="font-mono text-[10px] uppercase tracking-widest font-semibold text-text-muted mb-5">Certifications</p>
-              <div className="space-y-5">
-                <div className="group">
-                  <p className="text-[14px] font-display font-bold text-text-main group-hover:text-primary transition-colors">Customs & Freight</p>
-                  <p className="font-mono text-[11px] text-text-muted mt-1.5">KESRA · 2025</p>
-                </div>
-                <div className="group">
-                  <p className="text-[14px] font-display font-bold text-text-main group-hover:text-primary transition-colors">OSHA Awareness</p>
-                  <p className="font-mono text-[11px] text-text-muted mt-1.5">Kaileys Consortium · 2024</p>
-                </div>
-              </div>
-            </div>
-
-            <div className="md:col-span-2 xl:col-span-1">
-              <p className="font-mono text-[10px] uppercase tracking-widest font-semibold text-text-muted mb-5">References</p>
-              <div className="space-y-3">
-                <div className="group bg-bg-surface p-4 rounded-xl shadow-sm border border-border-main transition-all duration-300 hover:-translate-y-1 hover:shadow-md hover:border-primary/50 relative overflow-hidden">
-                  <div className="absolute inset-0 bg-gradient-to-br from-primary/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none"></div>
-                  <div className="relative z-10">
-                    <p className="text-[14px] font-display font-bold text-text-main group-hover:text-primary transition-colors">Stephen Katingima</p>
-                    <p className="font-mono text-[10px] text-text-muted mt-1">COO, SokoFresh EA · 0721 457 474</p>
-                  </div>
-                </div>
-                <div className="group bg-bg-surface p-4 rounded-xl shadow-sm border border-border-main transition-all duration-300 hover:-translate-y-1 hover:shadow-md hover:border-primary/50 relative overflow-hidden">
-                  <div className="absolute inset-0 bg-gradient-to-br from-primary/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none"></div>
-                  <div className="relative z-10">
-                    <p className="text-[14px] font-display font-bold text-text-main group-hover:text-primary transition-colors">Ralph Wechuli</p>
-                    <p className="font-mono text-[10px] text-text-muted mt-1">Dean, Eastlands College · 0721 120 975</p>
-                  </div>
-                </div>
-                <div className="group bg-bg-surface p-4 rounded-xl shadow-sm border border-border-main transition-all duration-300 hover:-translate-y-1 hover:shadow-md hover:border-primary/50 relative overflow-hidden">
-                  <div className="absolute inset-0 bg-gradient-to-br from-primary/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none"></div>
-                  <div className="relative z-10">
-                    <p className="text-[14px] font-display font-bold text-text-main group-hover:text-primary transition-colors">Benson Wambua</p>
-                    <p className="text-xs text-text-muted mt-0.5">Asst. Chief Mechanic</p>
-                    <div className="font-mono text-[10px] text-text-muted mt-1.5 flex gap-2 w-full truncate">
-                      <a href="mailto:bensonwambua43@gmail.com" className="hover:text-primary transition-colors truncate">bensonwambua...</a>
-                      <span className="text-border-main">·</span>
-                      <a href="tel:0721120975" className="hover:text-primary transition-colors shrink-0">0721 120 975</a>
+                  <motion.section variants={itemVariants} className="grid grid-cols-1 md:grid-cols-2 gap-10">
+                    <div>
+                      <h3 className="font-mono text-[10px] uppercase tracking-widest font-semibold text-text-muted mb-5">Education</h3>
+                      <div className="space-y-4">
+                        <motion.div 
+                          whileHover={{ y: -2 }}
+                          className="group bg-bg-surface p-6 rounded-2xl shadow-sm border border-border-main hover:border-primary/50 hover:shadow-md transition-all relative overflow-hidden"
+                        >
+                          <div className="absolute top-0 right-0 w-16 h-16 bg-primary/5 rounded-bl-full -mr-8 -mt-8 group-hover:scale-150 transition-transform duration-500"></div>
+                          <p className="text-[15px] font-display font-bold text-text-main relative z-10">BSc Industrial Chemistry</p>
+                          <p className="text-[14px] font-medium text-text-muted mt-1 relative z-10">Masinde Muliro University</p>
+                          <p className="font-mono text-[11px] text-primary/80 mt-4 font-semibold uppercase tracking-wider flex items-center gap-2 relative z-10">
+                            <GraduationCap className="w-3.5 h-3.5" />
+                            Graduated 2023
+                          </p>
+                        </motion.div>
+                      </div>
                     </div>
-                  </div>
+                    <div>
+                      <h3 className="font-mono text-[10px] uppercase tracking-widest font-semibold text-text-muted mb-5">References</h3>
+                      <div className="space-y-3">
+                        <motion.div whileHover={{ x: 4 }} className="group bg-bg-surface p-4 rounded-xl shadow-sm border border-border-main transition-all duration-300 hover:border-primary/40 hover:shadow-md cursor-default flex items-center justify-between">
+                          <div className="relative z-10">
+                            <p className="text-[14px] font-display font-bold text-text-main group-hover:text-primary transition-colors">Stephen Katingima</p>
+                            <p className="text-[12px] text-text-muted mt-0.5">COO, SokoFresh EA</p>
+                          </div>
+                          <a href="tel:0721457474" className="w-8 h-8 rounded-full bg-bg-base border border-border-main flex items-center justify-center text-text-muted group-hover:text-primary group-hover:border-primary/30 transition-all hover:bg-primary/5 cursor-pointer">
+                             <Phone className="w-3.5 h-3.5" />
+                          </a>
+                        </motion.div>
+                        <motion.div whileHover={{ x: 4 }} className="group bg-bg-surface p-4 rounded-xl shadow-sm border border-border-main transition-all duration-300 hover:border-primary/40 hover:shadow-md cursor-default flex items-center justify-between">
+                          <div className="relative z-10">
+                            <p className="text-[14px] font-display font-bold text-text-main group-hover:text-primary transition-colors">Ralph Wechuli</p>
+                            <p className="text-[12px] text-text-muted mt-0.5">Dean, Eastlands College</p>
+                          </div>
+                          <a href="tel:0721120975" className="w-8 h-8 rounded-full bg-bg-base border border-border-main flex items-center justify-center text-text-muted group-hover:text-primary group-hover:border-primary/30 transition-all hover:bg-primary/5 cursor-pointer">
+                             <Phone className="w-3.5 h-3.5" />
+                          </a>
+                        </motion.div>
+                        <motion.div whileHover={{ x: 4 }} className="group bg-bg-surface p-4 rounded-xl shadow-sm border border-border-main transition-all duration-300 hover:border-primary/40 hover:shadow-md cursor-default flex items-center justify-between">
+                          <div className="relative z-10">
+                            <p className="text-[14px] font-display font-bold text-text-main group-hover:text-primary transition-colors">Benson Wambua</p>
+                            <p className="text-[12px] text-text-muted mt-0.5">Asst. Chief Mechanic</p>
+                          </div>
+                          <a href="tel:0721120975" className="w-8 h-8 rounded-full bg-bg-base border border-border-main flex items-center justify-center text-text-muted group-hover:text-primary group-hover:border-primary/30 transition-all hover:bg-primary/5 cursor-pointer">
+                             <Phone className="w-3.5 h-3.5" />
+                          </a>
+                        </motion.div>
+                      </div>
+                    </div>
+                  </motion.section>
                 </div>
-              </div>
-            </div>
-          </div>
+              )}
 
-          {/* COMPANIES WORKED WITH */}
-          <div className="mt-16 pt-10 border-t border-border-main print:mt-10">
-            <h3 className="font-mono text-[10px] uppercase tracking-widest font-semibold text-text-muted mb-8 text-center">Organisations I've Worked With</h3>
-            <div className="flex flex-wrap justify-center items-center gap-8 md:gap-16 opacity-75 md:grayscale hover:grayscale-0 transition-all duration-500">
-              <div className="flex items-center gap-3 group">
-                <div className="p-3 bg-bg-surface rounded-xl border border-border-main group-hover:border-primary/30 group-hover:bg-primary/5 transition-all">
-                  <GraduationCap className="w-6 h-6 text-text-main group-hover:text-primary transition-colors" />
-                </div>
-                <div className="flex flex-col">
-                  <span className="font-display font-bold text-lg tracking-tight text-text-main group-hover:text-primary transition-colors leading-tight">Strathmore</span>
-                  <span className="font-mono text-[9px] uppercase tracking-widest text-text-muted mt-0.5">University</span>
-                </div>
-              </div>
+              {/* ----------------- PORTFOLIO TAB ----------------- */}
+              {(activeTab === 'portfolio') && (
+                <div className="space-y-16 md:space-y-20 print:block pb-12">
+                  
+                  <section>
+                    <motion.p variants={itemVariants} className="text-primary font-mono text-[10px] uppercase tracking-[0.3em] font-semibold mb-10">Professional Experience & Skills</motion.p>
+                    <div className="grid grid-cols-1 xl:grid-cols-2 gap-16 lg:gap-20">
+                      
+                      {/* PROFESSIONAL TIMELINE */}
+                      <motion.div variants={itemVariants} className="relative border-l-2 border-border-main/60 pl-8 space-y-14 py-2">
+                          <TimelineItem isFirst={true} delay={100}>
+                            <div className="inline-block px-3 py-1 bg-primary/10 rounded-md border border-primary/20 mb-3">
+                              <p className="font-mono text-[10px] font-semibold text-primary tracking-widest">JAN 2025 – PRESENT</p>
+                            </div>
+                            <h4 className="text-[16px] font-display font-bold text-text-main">Operations & Logistics Officer</h4>
+                            <p className="text-[13px] text-text-muted font-medium pb-3 flex items-center gap-1.5"><Building2 className="w-3.5 h-3.5"/>SokoFresh Agri Innovations EA Ltd</p>
+                            <ul className="list-none text-[14px] text-text-muted space-y-2.5">
+                              <li className="relative pl-5 before:content-[''] before:w-1.5 before:h-1.5 before:rounded-sm before:bg-primary/60 before:absolute before:left-0 before:top-2">Plan and optimize outgoing shipments</li>
+                              <li className="relative pl-5 before:content-[''] before:w-1.5 before:h-1.5 before:rounded-sm before:bg-primary/60 before:absolute before:left-0 before:top-2">Manage electronic certifications (KEPHIS, KRA, AFA/HCD)</li>
+                              <li className="relative pl-5 before:content-[''] before:w-1.5 before:h-1.5 before:rounded-sm before:bg-primary/60 before:absolute before:left-0 before:top-2">Coordinate international certification audits</li>
+                              <li className="relative pl-5 before:content-[''] before:w-1.5 before:h-1.5 before:rounded-sm before:bg-primary/60 before:absolute before:left-0 before:top-2">Ensure full compliance of shipping documentation</li>
+                              <li className="relative pl-5 before:content-[''] before:w-1.5 before:h-1.5 before:rounded-sm before:bg-primary/60 before:absolute before:left-0 before:top-2">Product intake at the buyer</li>
+                              <li className="relative pl-5 before:content-[''] before:w-1.5 before:h-1.5 before:rounded-sm before:bg-primary/60 before:absolute before:left-0 before:top-2">Invoicing and Commercial analysis</li>
+                            </ul>
+                          </TimelineItem>
 
-              <div className="flex items-center gap-3 group">
-                <div className="p-3 bg-bg-surface rounded-xl border border-border-main group-hover:border-green-500/30 group-hover:bg-green-500/5 transition-all">
-                  <Leaf className="w-6 h-6 text-text-main group-hover:text-green-500 transition-colors" />
-                </div>
-                <div className="flex flex-col">
-                  <span className="font-display font-bold text-lg tracking-tight text-text-main group-hover:text-green-500 transition-colors leading-tight">SokoFresh</span>
-                  <span className="font-mono text-[9px] uppercase tracking-[0.2em] text-text-muted mt-0.5">Agri Innovations</span>
-                </div>
-              </div>
+                          <TimelineItem delay={200}>
+                            <p className="font-mono text-[10px] font-semibold text-text-muted tracking-widest mb-2">MAY 2024 – JAN 2025</p>
+                            <h4 className="text-[16px] font-display font-bold text-text-main">Operations & Logistics Associate</h4>
+                            <p className="text-[13px] text-text-muted font-medium pb-3 flex items-center gap-1.5"><Building2 className="w-3.5 h-3.5"/>SokoFresh Agri Innovations EA Ltd</p>
+                            <ul className="list-none text-[14px] text-text-muted space-y-2.5">
+                              <li className="relative pl-4 before:content-[''] before:w-1.5 before:h-1.5 before:rounded-full before:bg-border-main before:absolute before:left-0 before:top-2">Coordinated outgoing avocado shipments</li>
+                              <li className="relative pl-4 before:content-[''] before:w-1.5 before:h-1.5 before:rounded-full before:bg-border-main before:absolute before:left-0 before:top-2">Managed bookings with KEPHIS, KRA, MAERSK</li>
+                              <li className="relative pl-4 before:content-[''] before:w-1.5 before:h-1.5 before:rounded-full before:bg-border-main before:absolute before:left-0 before:top-2">Provided shipment status updates to customers</li>
+                            </ul>
+                          </TimelineItem>
 
-              <div className="flex items-center gap-3 group">
-                <div className="p-3 bg-bg-surface rounded-xl border border-border-main group-hover:border-blue-500/30 group-hover:bg-blue-500/5 transition-all">
-                  <Building2 className="w-6 h-6 text-text-main group-hover:text-blue-500 transition-colors" />
+                          <TimelineItem delay={300}>
+                            <p className="font-mono text-[10px] font-semibold text-text-muted tracking-widest mb-2">NOV 2023 – APR 2024</p>
+                            <h4 className="text-[16px] font-display font-bold text-text-main">Intake Intern Trainee</h4>
+                            <p className="text-[13px] text-text-muted font-medium pb-3 flex items-center gap-1.5"><Building2 className="w-3.5 h-3.5"/>SokoFresh Agri Innovations EA Ltd</p>
+                            <ul className="list-none text-[14px] text-text-muted space-y-2.5">
+                              <li className="relative pl-4 before:content-[''] before:w-1.5 before:h-1.5 before:rounded-full before:bg-border-main before:absolute before:left-0 before:top-2">Procured fresh produce from smallholder farmers</li>
+                              <li className="relative pl-4 before:content-[''] before:w-1.5 before:h-1.5 before:rounded-full before:bg-border-main before:absolute before:left-0 before:top-2">Quality control, sorting & grading</li>
+                              <li className="relative pl-4 before:content-[''] before:w-1.5 before:h-1.5 before:rounded-full before:bg-border-main before:absolute before:left-0 before:top-2">Maintained accurate inventory records</li>
+                            </ul>
+                          </TimelineItem>
+
+                          <TimelineItem delay={400}>
+                            <p className="font-mono text-[10px] font-semibold text-text-muted tracking-widest mb-2">MAY 2023 – AUG 2023</p>
+                            <h4 className="text-[16px] font-display font-bold text-text-main">Lab Assistance Technician</h4>
+                            <p className="text-[13px] text-text-muted font-medium pb-3 flex items-center gap-1.5"><Building2 className="w-3.5 h-3.5"/>Strathmore University (CeRTS)</p>
+                            <ul className="list-none text-[14px] text-text-muted space-y-2.5">
+                              <li className="relative pl-4 before:content-[''] before:w-1.5 before:h-1.5 before:rounded-full before:bg-border-main before:absolute before:left-0 before:top-2">Blood & plasma sample preparation</li>
+                              <li className="relative pl-4 before:content-[''] before:w-1.5 before:h-1.5 before:rounded-full before:bg-border-main before:absolute before:left-0 before:top-2">Maintenance of analytical instruments</li>
+                            </ul>
+                          </TimelineItem>
+                      </motion.div>
+
+                      {/* SKILLS GRAPHS */}
+                      <motion.div variants={itemVariants} className="space-y-12">
+                        <div>
+                          <h3 className="font-mono text-[10px] uppercase tracking-widest font-semibold text-text-muted mb-6 flex items-center gap-2">
+                            <span className="w-8 h-px bg-border-main"></span>
+                            Operations & Logistics
+                          </h3>
+                          <div className="h-[280px] w-full bg-bg-surface border border-border-main rounded-3xl shadow-sm overflow-hidden p-4 relative group block hover:shadow-md transition-shadow">
+                            {isMounted && (
+                              <ResponsiveContainer width="100%" height="100%">
+                                <RadarChart cx="50%" cy="50%" outerRadius="65%" data={logisticsData}>
+                                  <PolarGrid stroke="var(--border-main)" strokeDasharray="3 3" />
+                                  <PolarAngleAxis 
+                                    dataKey="subject" 
+                                    tick={{ fill: 'var(--text-muted)', fontSize: 10, fontFamily: 'monospace', fontWeight: 600 }} 
+                                  />
+                                  <Tooltip 
+                                    contentStyle={{ backgroundColor: 'var(--bg-surface)', borderColor: 'var(--border-main)', borderRadius: '12px', fontSize: '12px', color: 'var(--text-main)', boxShadow: '0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1)' }} 
+                                    itemStyle={{ color: 'var(--primary)', fontWeight: 600 }} 
+                                    cursor={{ stroke: 'var(--primary-light)', strokeWidth: 1, strokeDasharray: '3 3' }}
+                                  />
+                                  <Radar 
+                                    name="Proficiency" 
+                                    dataKey="A" 
+                                    stroke="var(--primary)" 
+                                    strokeWidth={2.5}
+                                    fill="var(--primary)" 
+                                    fillOpacity={0.2} 
+                                    className="transition-opacity duration-300 group-hover:fill-opacity-30"
+                                    isAnimationActive={true}
+                                    animationDuration={1500}
+                                    animationEasing="ease-out"
+                                    dot={{ r: 3, fill: 'var(--bg-surface)', stroke: 'var(--primary)', strokeWidth: 1.5 }}
+                                    activeDot={{ r: 5, fill: 'var(--primary)', stroke: 'var(--bg-surface)' }}
+                                  />
+                                </RadarChart>
+                              </ResponsiveContainer>
+                            )}
+                          </div>
+                        </div>
+
+                        <div>
+                          <h3 className="font-mono text-[10px] uppercase tracking-widest font-semibold text-text-muted mb-6 flex items-center gap-2">
+                            <span className="w-8 h-px bg-border-main"></span>
+                            Data & Technology
+                          </h3>
+                          <div className="bg-bg-surface border border-border-main rounded-3xl shadow-sm p-8 space-y-5 hover:shadow-md transition-shadow">
+                            {techSkills.map((skill, index) => (
+                              <SkillBar key={skill.name} name={skill.name} percentage={skill.percentage} index={index} />
+                            ))}
+                          </div>
+                        </div>
+
+                        <div className="pt-4">
+                          <h3 className="font-mono text-[10px] uppercase tracking-widest font-semibold text-text-muted mb-6 flex items-center gap-2">
+                            <span className="w-8 h-px bg-border-main"></span>
+                            Certifications Audited & Coordinated
+                          </h3>
+                          <div className="flex flex-wrap gap-3">
+                            {['SMETA Audit', 'GlobalG.A.P.', 'GRASP', 'Rainforest Alliance', 'KEPHIS', 'AFA/HCD'].map((skill) => (
+                              <motion.span 
+                                whileHover={{ scale: 1.05 }}
+                                key={skill} 
+                                className="px-4 py-2 bg-bg-surface border border-border-main shadow-sm rounded-lg font-mono text-[12px] text-text-main font-medium cursor-default hover:text-primary hover:border-primary/40 hover:bg-primary/5 transition-colors"
+                              >
+                                {skill}
+                              </motion.span>
+                            ))}
+                          </div>
+                        </div>
+                      </motion.div>
+                    </div>
+                  </section>
+
+                  <motion.section variants={itemVariants}>
+                    <h3 className="font-mono text-[10px] uppercase tracking-widest font-semibold text-primary mb-8 text-center sm:text-left">Key Achievements</h3>
+                    <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
+                      <motion.div whileHover={{ y: -4, shadow: "0 10px 25px -5px rgba(0,0,0,0.1)" }} className="bg-gradient-to-b from-bg-surface to-bg-base p-6 rounded-2xl border border-border-main border-t-4 border-t-yellow-500 shadow-sm transition-all duration-300 relative overflow-hidden">
+                        <div className="absolute top-0 right-0 p-4 opacity-10">
+                          <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-yellow-500"><path d="M6 9H4.5a2.5 2.5 0 0 1 0-5H6"></path><path d="M18 9h1.5a2.5 2.5 0 0 0 0-5H18"></path><path d="M4 22h16"></path><path d="M10 14.66V17c0 .55-.47.98-.97 1.21C7.85 18.75 7 20.24 7 22"></path><path d="M14 14.66V17c0 .55.47.98.97 1.21C16.15 18.75 17 20.24 17 22"></path><path d="M18 2H6v7a6 6 0 0 0 12 0V2Z"></path></svg>
+                        </div>
+                        <p className="text-base font-bold text-text-main relative z-10">Employee of the Year</p>
+                        <p className="font-mono text-[11px] font-semibold text-yellow-600 mt-3 uppercase tracking-wide relative z-10">2025 · SokoFresh</p>
+                      </motion.div>
+                      <motion.div whileHover={{ y: -4 }} className="bg-gradient-to-b from-bg-surface to-bg-base p-6 rounded-2xl border border-border-main border-t-4 border-t-blue-500 shadow-sm transition-all duration-300 relative overflow-hidden">
+                        <div className="absolute top-0 right-0 p-4 opacity-10">
+                           <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-blue-500"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon></svg>
+                        </div>
+                        <p className="text-base font-bold text-text-main relative z-10">Employee of the Month</p>
+                        <p className="font-mono text-[11px] font-semibold text-blue-600 mt-3 uppercase tracking-wide relative z-10">Mar 2024 · SokoFresh</p>
+                      </motion.div>
+                      <motion.div whileHover={{ y: -4 }} className="bg-gradient-to-b from-bg-surface to-bg-base p-6 rounded-2xl border border-border-main border-t-4 border-t-green-500 shadow-sm transition-all duration-300 relative overflow-hidden">
+                        <div className="absolute top-0 right-0 p-4 opacity-10">
+                           <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-green-500"><polyline points="20 6 9 17 4 12"></polyline></svg>
+                        </div>
+                        <p className="text-base font-bold text-text-main relative z-10">Result Driven Employee</p>
+                        <p className="font-mono text-[11px] font-semibold text-green-600 mt-3 uppercase tracking-wide relative z-10">SokoFresh</p>
+                      </motion.div>
+                    </div>
+                  </motion.section>
+
+                  <motion.section variants={itemVariants} className="bg-gradient-to-br from-bg-surface to-bg-base p-10 sm:p-14 rounded-[2rem] border border-border-main shadow-lg relative overflow-hidden mt-12">
+                    <div className="absolute inset-0 bg-primary/5 opacity-50 pointer-events-none mix-blend-overlay"></div>
+                    <div className="absolute top-0 right-0 -mt-20 -mr-20 w-64 h-64 bg-primary/[0.03] rounded-full blur-3xl"></div>
+                    <div className="absolute bottom-0 left-0 -mb-20 -ml-20 w-64 h-64 bg-blue-500/[0.03] rounded-full blur-3xl"></div>
+                    
+                    <h3 className="font-mono text-[11px] uppercase tracking-[0.2em] font-bold text-text-muted mb-12 text-center relative z-10">Organisations I've Worked With</h3>
+                    <div className="flex flex-wrap justify-center items-center gap-12 md:gap-20 opacity-80 md:grayscale hover:grayscale-0 transition-all duration-700 relative z-10">
+                      
+                      <motion.div whileHover={{ scale: 1.05 }} className="flex items-center gap-4 group cursor-default">
+                        <div className="p-4 bg-bg-base rounded-2xl border border-border-main group-hover:border-primary/40 group-hover:bg-primary/5 transition-all shadow-sm group-hover:shadow-primary/10">
+                          <GraduationCap className="w-7 h-7 text-text-main group-hover:text-primary transition-colors" />
+                        </div>
+                        <div className="flex flex-col">
+                          <span className="font-display font-bold text-xl tracking-tight text-text-main group-hover:text-primary transition-colors leading-tight">Strathmore</span>
+                          <span className="font-mono text-[9px] uppercase tracking-[0.25em] text-text-muted mt-1 font-semibold">University</span>
+                        </div>
+                      </motion.div>
+
+                      <motion.div whileHover={{ scale: 1.05 }} className="flex items-center gap-4 group cursor-default">
+                        <div className="p-4 bg-bg-base rounded-2xl border border-border-main group-hover:border-green-500/40 group-hover:bg-green-500/5 transition-all shadow-sm group-hover:shadow-green-500/10">
+                          <Leaf className="w-7 h-7 text-text-main group-hover:text-green-500 transition-colors" />
+                        </div>
+                        <div className="flex flex-col">
+                          <span className="font-display font-bold text-xl tracking-tight text-text-main group-hover:text-green-500 transition-colors leading-tight">SokoFresh</span>
+                          <span className="font-mono text-[9px] uppercase tracking-[0.25em] text-text-muted mt-1 font-semibold">Agri Innovations</span>
+                        </div>
+                      </motion.div>
+
+                      <motion.div whileHover={{ scale: 1.05 }} className="flex items-center gap-4 group cursor-default">
+                        <div className="p-4 bg-bg-base rounded-2xl border border-border-main group-hover:border-blue-500/40 group-hover:bg-blue-500/5 transition-all shadow-sm group-hover:shadow-blue-500/10">
+                          <Building2 className="w-7 h-7 text-text-main group-hover:text-blue-500 transition-colors" />
+                        </div>
+                        <div className="flex flex-col">
+                          <span className="font-display font-bold text-xl tracking-tight text-text-main group-hover:text-blue-500 transition-colors leading-tight">Eastlands</span>
+                          <span className="font-mono text-[9px] uppercase tracking-[0.25em] text-text-muted mt-1 font-semibold">College</span>
+                        </div>
+                      </motion.div>
+
+                    </div>
+                  </motion.section>
                 </div>
-                <div className="flex flex-col">
-                  <span className="font-display font-bold text-lg tracking-tight text-text-main group-hover:text-blue-500 transition-colors leading-tight">Eastlands</span>
-                  <span className="font-mono text-[9px] uppercase tracking-[0.2em] text-text-muted mt-0.5">College</span>
+              )}
+
+              {/* ----------------- CONTACTS TAB ----------------- */}
+              {(activeTab === 'contacts') && (
+                <div className="space-y-12 max-w-4xl pb-12">
+                  <motion.section variants={itemVariants}>
+                    <p className="text-primary font-mono text-[10px] uppercase tracking-[0.3em] font-semibold mb-6 flex items-center gap-3">
+                      <span className="w-8 h-px bg-primary/50"></span>
+                      Get In Touch
+                    </p>
+                    <h2 className="text-4xl sm:text-5xl lg:text-6xl font-display font-bold text-text-main tracking-tighter mb-12 leading-[1.1] max-w-2xl">
+                      Let's Connect & <br className="hidden sm:block" />
+                      <span className="text-transparent bg-clip-text bg-gradient-to-r from-primary to-primary-light">Build Something Great.</span>
+                    </h2>
+                    
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-6 lg:gap-8">
+                      <motion.a 
+                        whileHover={{ y: -5, scale: 1.02 }}
+                        whileTap={{ scale: 0.98 }}
+                        href="tel:0705379875" 
+                        className="bg-bg-surface p-8 sm:p-10 rounded-3xl border border-border-main hover:border-primary/40 hover:shadow-xl hover:shadow-primary/5 transition-all duration-300 group flex flex-col gap-8 relative overflow-hidden"
+                      >
+                        <div className="absolute top-5 right-5 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+                          <ExternalLink className="w-5 h-5 text-primary/50" />
+                        </div>
+                        <div className="w-16 h-16 rounded-2xl bg-primary/10 text-primary flex items-center justify-center group-hover:scale-110 transition-transform duration-500 shadow-inner group-hover:shadow-primary/20 group-hover:bg-primary group-hover:text-white">
+                          <Phone className="w-7 h-7" />
+                        </div>
+                        <div>
+                          <p className="font-mono text-[11px] font-semibold uppercase tracking-[0.2em] text-text-muted mb-2">Phone</p>
+                          <p className="font-display font-bold text-2xl text-text-main group-hover:text-primary transition-colors">+254 705 379 875</p>
+                        </div>
+                      </motion.a>
+
+                      <motion.a 
+                        whileHover={{ y: -5, scale: 1.02 }}
+                        whileTap={{ scale: 0.98 }}
+                        href="mailto:njorogewambua254@gmail.com" 
+                        className="bg-bg-surface p-8 sm:p-10 rounded-3xl border border-border-main hover:border-primary/40 hover:shadow-xl hover:shadow-primary/5 transition-all duration-300 group flex flex-col gap-8 relative overflow-hidden"
+                      >
+                        <div className="absolute top-5 right-5 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+                          <ExternalLink className="w-5 h-5 text-primary/50" />
+                        </div>
+                        <div className="w-16 h-16 rounded-2xl bg-primary/10 text-primary flex items-center justify-center group-hover:scale-110 transition-transform duration-500 shadow-inner group-hover:shadow-primary/20 group-hover:bg-primary group-hover:text-white">
+                          <Mail className="w-7 h-7" />
+                        </div>
+                        <div>
+                          <p className="font-mono text-[11px] font-semibold uppercase tracking-[0.2em] text-text-muted mb-2">Email</p>
+                          <p className="font-display font-bold text-xl sm:text-2xl text-text-main group-hover:text-primary transition-colors break-all">njorogewambua254@gmail.com</p>
+                        </div>
+                      </motion.a>
+
+                      <motion.a 
+                        whileHover={{ y: -5, scale: 1.02 }}
+                        whileTap={{ scale: 0.98 }}
+                        href="https://linkedin.com/in/josephnjoroge-44b271346" 
+                        target="_blank" 
+                        rel="noopener noreferrer" 
+                        className="bg-bg-surface p-8 sm:p-10 rounded-3xl border border-border-main hover:border-[#0A66C2]/40 hover:shadow-xl hover:shadow-[#0A66C2]/5 transition-all duration-300 group flex flex-col gap-8 relative overflow-hidden"
+                      >
+                         <div className="absolute top-5 right-5 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+                          <ExternalLink className="w-5 h-5 text-[#0A66C2]/50" />
+                        </div>
+                        <div className="w-16 h-16 rounded-2xl bg-[#0A66C2]/10 text-[#0A66C2] flex items-center justify-center group-hover:scale-110 transition-transform duration-500 shadow-inner group-hover:shadow-[#0A66C2]/20 group-hover:bg-[#0A66C2] group-hover:text-white">
+                          <Linkedin className="w-7 h-7" />
+                        </div>
+                        <div>
+                          <p className="font-mono text-[11px] font-semibold uppercase tracking-[0.2em] text-text-muted mb-2">LinkedIn</p>
+                          <p className="font-display font-bold text-2xl text-text-main group-hover:text-[#0A66C2] transition-colors mt-0.5">Joseph Njoroge</p>
+                        </div>
+                      </motion.a>
+
+                      <motion.div 
+                        whileHover={{ y: -5, scale: 1.02 }}
+                         className="bg-bg-surface p-8 sm:p-10 rounded-3xl border border-border-main transition-colors group flex flex-col gap-8 cursor-default relative overflow-hidden hover:shadow-xl hover:shadow-green-500/5 hover:border-green-500/30"
+                      >
+                         <div className="absolute inset-0 bg-green-500/[0.02] opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
+                        <div className="w-16 h-16 rounded-2xl bg-green-500/10 text-green-500 flex items-center justify-center relative shadow-inner group-hover:shadow-green-500/20 transition-all duration-500 group-hover:scale-110">
+                          <span className="animate-ping absolute inline-flex h-full w-full rounded-2xl opacity-20 bg-green-500"></span>
+                          <MapPin className="w-7 h-7 group-hover:animate-bounce" />
+                        </div>
+                        <div className="relative z-10">
+                          <p className="font-mono text-[11px] font-semibold uppercase tracking-[0.2em] text-text-muted mb-2">Status & Location</p>
+                          <p className="font-display font-bold text-2xl text-text-main group-hover:text-green-500 transition-colors">Nairobi, Kenya</p>
+                        </div>
+                      </motion.div>
+                    </div>
+                  </motion.section>
                 </div>
-              </div>
-            </div>
-          </div>
+              )}
+              
+            </motion.div>
+          </AnimatePresence>
         </div>
       </main>
     </div>
